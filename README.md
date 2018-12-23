@@ -1,0 +1,4 @@
+- Setting up and maintaining a database can be a hassle.
+- The Realtime database is a cloud-hosted, NoSQL database that stores and synchronizes data between all your live users in realtime.
+- The data is stored as JSON in Firebase real-time database and automatically synchronizes in realtime.
+- In Firebase don't use arrays. 
