@@ -26,21 +26,33 @@ new Vue({
 
   methods: {
     storeMessage () {
-      this.writeUserData(this.messageText, this.nickname)
+      this.writeData(this.messageText, this.nickname)
       this.messageText = ''
     },
 
-    writeUserData (text, nickname) {
+    writeData (text, nickname) {
       messagesRef.push().set({
         text,
         nickname
       });
+    },
+
+    deleteMessage (message) {
+      messagesRef.child(message.id).remove()
     }
   },
 
   created () {
     messagesRef.on('child_added', (snapshot) => {
-      this.messages.push(snapshot.val())
+      // ES7 
+      this.messages.push({...snapshot.val(), id: snapshot.key})
+    })
+    // By setting up a listener, we make sure that everybody gets the update 
+    messagesRef.on('child_removed', (snapshot) => {
+      const deleteMessage = this.messages.find((message) => message.id === snapshot.key)
+      const index = this.messages.indexOf(deleteMessage)
+      // splice 方法用于删除原数组的一部分成员
+      this.messages.splice(index, 1)
     })
   }
 })
