@@ -1,4 +1,4 @@
-  // Set the configuration for the app
+// Set the configuration for the app
 // Initialize Firebase
 const config = {
   apiKey: "AIzaSyACEg3iRdEiOvAUItym5UYsDYzhzNdEqcs",
@@ -10,8 +10,10 @@ const config = {
 };
 firebase.initializeApp(config);
 
-  // Get a reference to the database service
+// Get a reference to the database service
 const database = firebase.database()
+// This makes our code shorter
+const messagesRef = database.ref('messages')
 
 new Vue({
   el: "#chat",
@@ -24,13 +26,20 @@ new Vue({
 
   methods: {
     storeMessage () {
-      this.messages.push({ text: this.messageText, nickname: this.nickname })
+      this.writeUserData(this.messageText, this.nickname)
       this.messageText = ''
+    },
+
+    writeUserData (text, nickname) {
+      messagesRef.push().set({
+        text,
+        nickname
+      });
     }
   },
 
   created () {
-    database.ref('messages').on('child_added', (snapshot) => {
+    messagesRef.on('child_added', (snapshot) => {
       this.messages.push(snapshot.val())
     })
   }
