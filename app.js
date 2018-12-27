@@ -63,6 +63,16 @@ new Vue({
     messagesRef.on('child_added', (snapshot) => {
       // ES7 
       this.messages.push({ ...snapshot.val(), id: snapshot.key })
+
+      if (snapshot.val().nickname !== this.nickname) {
+        nativeToast({
+          message: `New message by ${snapshot.val().nickname}`,
+          position: 'south',
+          // Self destroy in 5 seconds
+          timeout: 5000,
+          type: 'success'
+        })
+      }
     })
     // By setting up a listener, we make sure that everybody gets the update 
     messagesRef.on('child_removed', (snapshot) => {
@@ -70,11 +80,31 @@ new Vue({
       const index = this.messages.indexOf(deleteMessage)
       // splice 方法用于删除原数组的一部分成员
       this.messages.splice(index, 1)
+
+      if (snapshot.val().nickname !== this.nickname) {
+        nativeToast({
+          message: `Message deleted by ${snapshot.val().nickname}`,
+          position: 'south',
+          // Self destroy in 5 seconds
+          timeout: 5000,
+          type: 'warning'
+        })
+      }
     })
     // listen for message changes in Firebase and update locally
     messagesRef.on('child_changed', (snapshot) => {
       const updateMessage = this.messages.find((message) => message.id === snapshot.key)
       updateMessage.text = snapshot.val().text
+      
+      if (snapshot.val().nickname !== this.nickname) {
+        nativeToast({
+          message: `Message edited by ${snapshot.val().nickname}`,
+          position: 'south',
+          // Self destroy in 5 seconds
+          timeout: 5000,
+          type: 'info'
+        })
+      }
     })
   }
 })
