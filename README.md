@@ -4,3 +4,5 @@
 - In Firebase don't use arrays. 
 - Values in Firebase can be objects, string, numbers or whatever but not false, null, undefined.
 - Update in real time.
+- The database is a JSON object.
+- It's east to do a mistake that use set instead of update.

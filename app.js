@@ -21,7 +21,8 @@ new Vue({
   data: {
     messages: [],
     messageText: '',
-    nickname: 'hootlex'
+    nickname: 'hootlex',
+    editingMessage: null // set it to null by default
   },
 
   methods: {
@@ -39,13 +40,29 @@ new Vue({
 
     deleteMessage (message) {
       messagesRef.child(message.id).remove()
+    },
+
+    editMessage (message) {
+      this.editingMessage = message
+      this.messageText = message.text
+    },
+
+    cancelMessage () {
+      this.editingMessage = null
+      this.messageText = ''
+    },
+
+    updateMessage () {
+      messagesRef.child(this.editingMessage.id).update({ text: this.messageText })
+
+      this.cancelMessage()
     }
   },
 
   created () {
     messagesRef.on('child_added', (snapshot) => {
       // ES7 
-      this.messages.push({...snapshot.val(), id: snapshot.key})
+      this.messages.push({ ...snapshot.val(), id: snapshot.key })
     })
     // By setting up a listener, we make sure that everybody gets the update 
     messagesRef.on('child_removed', (snapshot) => {
@@ -53,6 +70,11 @@ new Vue({
       const index = this.messages.indexOf(deleteMessage)
       // splice 方法用于删除原数组的一部分成员
       this.messages.splice(index, 1)
+    })
+    // listen for message changes in Firebase and update locally
+    messagesRef.on('child_changed', (snapshot) => {
+      const updateMessage = this.messages.find((message) => message.id === snapshot.key)
+      updateMessage.text = snapshot.val().text
     })
   }
 })
